@@ -90,7 +90,7 @@ jobs:
           
           # Prepare artifacts directory and copy APKs
           
-          echo "-----------------"
+          echo "------------------"
           ls
           
           mkdir -p ../artifacts
