@@ -89,8 +89,12 @@ jobs:
           radiant_p4a apk --arch arm64-v8a
           
           # Prepare artifacts directory and copy APKs
-          mkdir -p artifacts
-          cp *.apk artifacts/
+          
+          echo "-----------------"
+          ls
+          
+          mkdir -p ../artifacts
+          cp *.apk ../artifacts/
 
       - name: Upload APKs as Artifacts
         uses: actions/upload-artifact@v4
