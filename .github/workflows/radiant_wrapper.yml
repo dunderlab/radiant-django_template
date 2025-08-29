@@ -89,5 +89,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: generated-apks
-        path: ${{DIST_NAME}}/*.apk
+        path: ${DIST_NAME}/*.apk
 # Uploads all generated .apk files as artifacts for download
