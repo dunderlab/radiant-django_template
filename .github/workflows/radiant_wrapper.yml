@@ -15,7 +15,7 @@ jobs:
 
       - name: Install Radiant-Compiler
         run: |
-          pip install radiant-compiler
+          pip install radiant-compiler pyjnius==1.5.0
         # Installs the Radiant-Compiler package for building Android apps
 
       - name: Execute Command in Docker Container

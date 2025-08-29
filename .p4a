@@ -5,6 +5,6 @@
 --dist_name project
 --version 0.1
 --bootstrap webview
---requirements python3,hostpython3,sqlite3,sqlparse,asgiref,pytz,pyjnius==1.5.0
+--requirements python3,hostpython3,sqlite3,sqlparse,asgiref,pytz,pyjnius
 --whitelist whitelist.txt
 --port 5000
