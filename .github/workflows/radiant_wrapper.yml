@@ -21,7 +21,7 @@ jobs:
     - name: Execute Command in Docker Container
       run: |
         # Pull the latest Docker image from dunderlab/radiant_p4a
-        docker pull dunderlab/radiant_p4a:latest
+        docker pull --platform=linux/amd64 dunderlab/radiant_p4a:latest
         
         cd project
 
