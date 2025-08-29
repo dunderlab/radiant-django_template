@@ -1,4 +1,4 @@
-name: Radiant Compilation Process for Django Project
+name: Radiant Wrapper
 
 on:
   workflow_dispatch:  # Allows manual trigger of the workflow
@@ -23,7 +23,9 @@ jobs:
         # Pull the latest Docker image from dunderlab/radiant_p4a
         docker pull dunderlab/radiant_p4a:latest
         
-        cd project
+        # Detect folder from .p4a (--dist_name)
+        DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
+        cd "$DIST_NAME"
 
         # Dowload the main sources to prevent compilation
         if grep -q "radiant.compiler" main.py; then
@@ -33,7 +35,7 @@ jobs:
             unzip radiant_compiler*.whl "radiant/*" -d .
         fi
         
-        if grep -q "radiant.framework" main.py; then
+        if [ -f "$DIST_NAME/manage.py" ]; then
             pip download  --no-deps radiant-framework
             unzip radiant_framework*.whl "radiant/*" -d .
             echo '
@@ -87,5 +89,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: generated-apks
-        path: project/*.apk
-      # Uploads all generated .apk files as artifacts for download
+        path: ${{DIST_NAME}}/*.apk
+# Uploads all generated .apk files as artifacts for download
