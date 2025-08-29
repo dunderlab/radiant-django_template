@@ -35,7 +35,7 @@ jobs:
             unzip radiant_compiler*.whl "radiant/*" -d .
         fi
         
-        if [ -f "$DIST_NAME/manage.py" ]; then
+        if [ -f "manage.py" ]; then
             pip download  --no-deps radiant-framework
             unzip radiant_framework*.whl "radiant/*" -d .
             echo '
