@@ -28,19 +28,20 @@ jobs:
           cd "$DIST_NAME"
           
           # Handle Radiant compiler app setup
-          # Downloads dependencies and extracts Django and Radiant files
-          if grep -q "radiant.compiler" main.py; then
+          # if grep -q "radiant.compiler" main.py; then
+          #     pip download  --no-deps radiant-framework
+          #     unzip radiant_framework*.whl "radiant/*" -d .
+          # fi
+          
+          # Handle Django app setup
+          # Downloads Radiant compiler and creates main.py for Django server
+          if [ -f "manage.py" ]; then
+
               pip download --no-deps django
               unzip django*.whl "django/*" -d .
               pip download  --no-deps radiant-compiler
               unzip radiant_compiler*.whl "radiant/*" -d .
-          fi
-          
-          # Handle Django app setup
-          # Downloads Radiant framework and creates main.py for Django server
-          if [ -f "manage.py" ]; then
-              pip download  --no-deps radiant-framework
-              unzip radiant_framework*.whl "radiant/*" -d .
+      
               echo '
               import sys
               import os
