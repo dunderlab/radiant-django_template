@@ -5,7 +5,7 @@ on:
   push:               # Triggers the workflow on every push to the repository
 
 jobs:
-  compile-apk:
+  wrapp-apk:
     runs-on: ubuntu-latest  # Specifies the runner environment
 
     steps:
@@ -27,7 +27,7 @@ jobs:
         DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
         cd "$DIST_NAME"
 
-        # Dowload the main sources to prevent compilation
+        # Download the main sources to prevent compilation
         if grep -q "radiant.compiler" main.py; then
             pip download --no-deps django==5.2.5
             unzip django*.whl "django/*" -d .
@@ -89,5 +89,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: generated-apks
-        path: ${DIST_NAME}/*.apk
+        path: ${{DIST_NAME}}/*.apk
 # Uploads all generated .apk files as artifacts for download
