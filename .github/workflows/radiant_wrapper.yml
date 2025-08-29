@@ -9,87 +9,91 @@ jobs:
     runs-on: ubuntu-latest  # Specifies the runner environment
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      # This step checks out a copy of your repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        # Clones the repository code into the workflow environment
 
-    - name: Install Radiant-Compiler
-      run: |
-        pip install radiant-compiler
-      # Installs the Radiant-Compiler Python module
+      - name: Install Radiant-Compiler
+        run: |
+          pip install radiant-compiler
+        # Installs the Radiant-Compiler package for building Android apps
 
-    - name: Execute Command in Docker Container
-      run: |
-        # Pull the latest Docker image from dunderlab/radiant_p4a
-        docker pull dunderlab/radiant_p4a:latest
-        
-        # Detect folder from .p4a (--dist_name)
-        DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
-        cd "$DIST_NAME"
-
-        # Download the main sources to prevent compilation
-        if grep -q "radiant.compiler" main.py; then
-            pip download --no-deps django==5.2.5
-            unzip django*.whl "django/*" -d .
-            pip download  --no-deps radiant-compiler
-            unzip radiant_compiler*.whl "radiant/*" -d .
-        fi
-        
-        if [ -f "manage.py" ]; then
-            pip download  --no-deps radiant-framework
-            unzip radiant_framework*.whl "radiant/*" -d .
+      - name: Execute Command in Docker Container
+        run: |
+          # Pull the Docker image used for building Android APKs
+          docker pull dunderlab/radiant_p4a:latest
+          
+          # Get the distribution name from .p4a config file
+          DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
+          cd "$DIST_NAME"
+          
+          # Handle Radiant compiler app setup
+          # Downloads dependencies and extracts Django and Radiant files
+          if grep -q "radiant.compiler" main.py; then
+              pip download --no-deps django
+              unzip django*.whl "django/*" -d .
+              pip download  --no-deps radiant-compiler
+              unzip radiant_compiler*.whl "radiant/*" -d .
+          fi
+          
+          # Handle Django app setup
+          # Downloads Radiant framework and creates main.py for Django server
+          if [ -f "manage.py" ]; then
+              pip download  --no-deps radiant-framework
+              unzip radiant_framework*.whl "radiant/*" -d .
+              echo '
+              import sys
+              import os
+              from radiant.compiler import server
+              with open("../.p4a", "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip().startswith("--port"):
+                        PORT = int(line.split()[1])
+                    if line.strip().startswith("--dist_name"):
+                        DIST_NAME = int(line.split()[1])
+              sys.path.append(os.path.join(os.path.dirname(__file__)))
+              server.main(DIST_NAME, ip='localhost', port=PORT)
+              ' > main.py
+          fi
+          
+          # Handle static HTML app setup
+          # Creates main.py with simple HTTP server for static files
+          if [ -f "index.html" ]; then
             echo '
-            import sys
-            import os
-            from radiant.compiler import server
+            import http.server
+            import socketserver
             with open(".p4a", "r", encoding="utf-8") as f:
-              for line in f:
-                  if line.strip().startswith("--port"):
-                      PORT = int(line.split()[1])
-                  if line.strip().startswith("--dist_name"):
-                      DIST_NAME = int(line.split()[1])
-            sys.path.append(os.path.join(os.path.dirname(__file__)))
-            server.main(DIST_NAME, ip='localhost', port=PORT)
+                for line in f:
+                    if line.strip().startswith("--port"):
+                        PORT = int(line.split()[1])
+            Handler = http.server.SimpleHTTPRequestHandler
+            with socketserver.TCPServer(("", PORT), Handler) as httpd:
+                print(f"Serving at http://localhost:{PORT}")
+                httpd.serve_forever()
             ' > main.py
-        fi
-        
-        if [ -f "index.html" ]; then
-          echo '
-          import http.server
-          import socketserver
-          with open(".p4a", "r", encoding="utf-8") as f:
-              for line in f:
-                  if line.strip().startswith("--port"):
-                      PORT = int(line.split()[1])
-          Handler = http.server.SimpleHTTPRequestHandler
-          with socketserver.TCPServer(("", PORT), Handler) as httpd:
-              print(f"Serving at http://localhost:{PORT}")
-              httpd.serve_forever()
-          ' > main.py
-        fi
-  
-        rm *.whl
+          fi
+          
+          # Cleanup downloaded wheel files
+          rm *.whl
+          
+          # Configure build inclusion/exclusion rules
+          # Exclude Python bytecode files
+          echo "*.pyc" > blacklist.txt
+          
+          # Include SQLite libraries and Python source files
+          echo "sqlite3/*" >> whitelist.txt
+          echo "lib-dynload/_sqlite3.so" >> whitelist.txt
+          echo "*.py" >> whitelist.txt
+          
+          # Build the Android APK for ARM64 architecture
+          radiant_p4a apk --arch arm64-v8a
+          
+          # Prepare artifacts directory and copy APKs
+          mkdir -p artifacts
+          cp *.apk artifacts/
 
-        # Create a blacklist.txt file and write "*.pyc" into it
-        # This is typically used to exclude Python bytecode files
-        echo "*.pyc" > blacklist.txt
-
-        # Create a whitelist.txt file and add various patterns to it
-        # "sqlite3/*" and "lib-dynload/_sqlite3.so" might be paths to include
-        # "*.py" includes all Python source files
-        echo "sqlite3/*" >> whitelist.txt
-        echo "lib-dynload/_sqlite3.so" >> whitelist.txt
-        echo "*.py" >> whitelist.txt
-
-        # Execute the Radiant command to generate APKs
-        # This command is for building Android APKs with specific architecture
-        radiant_p4a apk --arch arm64-v8a
-        mkdir -p artifacts
-        cp *.apk artifacts/
-
-    - name: Upload APKs as Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: generated-apks
-        path: artifacts/*.apk
-# Uploads all generated .apk files as artifacts for download
+      - name: Upload APKs as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-apks # Name for the uploaded artifact
+          path: artifacts/*.apk # Path pattern to find APK files for upload
