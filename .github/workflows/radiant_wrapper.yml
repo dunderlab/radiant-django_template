@@ -15,7 +15,7 @@ jobs:
 
       - name: Install Radiant-Compiler
         run: |
-          pip install radiant-compiler pyjnius==1.5.0
+          pip install radiant-compiler
         # Installs the Radiant-Compiler package for building Android apps
 
       - name: Execute Command in Docker Container
@@ -42,19 +42,19 @@ jobs:
               pip download  --no-deps radiant-compiler
               unzip radiant_compiler*.whl "radiant/*" -d .
       
-              echo '
-              import sys
-              import os
-              from radiant.compiler import server
-              with open("../.p4a", "r", encoding="utf-8") as f:
-                for line in f:
-                    if line.strip().startswith("--port"):
-                        PORT = int(line.split()[1])
-                    if line.strip().startswith("--dist_name"):
-                        DIST_NAME = int(line.split()[1])
-              sys.path.append(os.path.join(os.path.dirname(__file__)))
-              server.main(DIST_NAME, ip='localhost', port=PORT)
-              ' > main.py
+#              echo '
+#              import sys
+#              import os
+#              from radiant.compiler import server
+#              with open("../.p4a", "r", encoding="utf-8") as f:
+#                for line in f:
+#                    if line.strip().startswith("--port"):
+#                        PORT = int(line.split()[1])
+#                    if line.strip().startswith("--dist_name"):
+#                        DIST_NAME = int(line.split()[1])
+#              sys.path.append(os.path.join(os.path.dirname(__file__)))
+#              server.main(DIST_NAME, ip='localhost', port=PORT)
+#              ' > main.py
           fi
           
           # Handle static HTML app setup
