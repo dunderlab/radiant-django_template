@@ -61,7 +61,7 @@ jobs:
             with open(".p4a", "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip().startswith("--port"):
-            PORT = int(line.split()[1])
+                        PORT = int(line.split()[1])
             Handler = http.server.SimpleHTTPRequestHandler
             with socketserver.TCPServer(("", PORT), Handler) as httpd:
                 print(f"Serving at http://localhost:{PORT}")
@@ -73,8 +73,8 @@ jobs:
           sed -i 's/^[[:space:]]\{2,4\}//' main.py
   
           # Cleanup downloaded wheel files
-          rm *.whl
-          
+          if ls *.whl 1> /dev/null 2>&1; then rm *.whl; fi
+
           # Configure build inclusion/exclusion rules
           # Exclude Python bytecode files
           echo "*.pyc" > blacklist.txt
