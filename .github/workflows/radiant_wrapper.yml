@@ -13,10 +13,10 @@ jobs:
         uses: actions/checkout@v4
         # Clones the repository code into the workflow environment
 
-      - name: Install Radiant-Compiler
+      - name: Install Radiant-Wrapper
         run: |
-          # Installs the Radiant-Compiler package for building Android apps
-          pip install radiant-compiler
+          # Installs the Radiant-Wrapper package for building Android apps
+          pip install radiant-wrapper
 
       - name: Execute Command in Docker Container
         run: |
@@ -27,7 +27,7 @@ jobs:
           DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
           
           # Handle Radiant Framework
-          if [ -f "main.py" ] && grep -q "radiant.compiler" main.py; then
+          if [ -f "main.py" ] && grep -q "radiant.wrapper" main.py; then
               pip download  --no-deps radiant-framework
               unzip radiant_framework*.whl "radiant/*" -d .
           fi
@@ -36,10 +36,10 @@ jobs:
           if [ -f "$DIST_NAME/manage.py" ]; then
               pip download --no-deps django
               unzip django*.whl "django/*" -d .
-              pip download  --no-deps radiant-compiler
-              unzip radiant_compiler*.whl "radiant/*" -d .
+              pip download  --no-deps radiant-wrapper
+              unzip radiant_wrapper*.whl "radiant/*" -d .
               echo '
-              from radiant.compiler import server
+              from radiant.wrapper import server
               with open(".p4a", "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip().startswith("--port"):
