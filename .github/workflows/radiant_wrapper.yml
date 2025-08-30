@@ -74,7 +74,7 @@ jobs:
           # Remove indentation (2-4 spaces) at the start of each line in main.py
           sed -i 's/^[[:space:]]\{2,4\}//' main.py
           # MacOS compatibility: remove indentation without creating backup file
-          sed -i '' 's/^[[:space:]]\{2,4\}//' main.py
+          # sed -i '' 's/^[[:space:]]\{2,4\}//' main.py
   
           # Cleanup downloaded wheel files
           rm *.whl
