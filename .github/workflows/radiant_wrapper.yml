@@ -5,7 +5,7 @@ on:
   push:               # Triggers the workflow on every push to the repository
 
 jobs:
-  wrapp-apk:
+  radiant-wrapper:
     runs-on: ubuntu-latest  # Specifies the runner environment
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           
           # Get the distribution name from .p4a config file
           DIST_NAME=$(grep -E '^--dist_name ' ../.p4a | awk '{print $2}')
-          cd "$DIST_NAME"
+          # cd "$DIST_NAME"
           
           # Handle Radiant Framework
           if grep -q "radiant.compiler" main.py; then
@@ -91,7 +91,7 @@ jobs:
           
           # Prepare artifacts directory and copy APKs
           mkdir -p ../artifacts
-          cp *.apk ../artifacts/
+          mv *.apk ../artifacts/
 
       - name: Upload APKs as Artifacts
         uses: actions/upload-artifact@v4
