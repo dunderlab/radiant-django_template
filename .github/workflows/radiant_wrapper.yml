@@ -15,13 +15,13 @@ jobs:
 
       - name: Install Radiant-Compiler
         run: |
-          pip install radiant-compiler
+          #pip install radiant-compiler
         # Installs the Radiant-Compiler package for building Android apps
 
       - name: Execute Command in Docker Container
         run: |
           # Pull the Docker image used for building Android APKs
-          docker pull dunderlab/radiant_p4a:latest
+          #docker pull dunderlab/radiant_p4a:latest
           
           # Get the distribution name from .p4a config file
           DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
@@ -57,22 +57,27 @@ jobs:
           # Handle static HTML app setup
           # Creates main.py with simple HTTP server for static files
           if [ -f "index.html" ]; then
-            echo '
-            import http.server
-            import socketserver
-            with open(".p4a", "r", encoding="utf-8") as f:
-                for line in f:
-                    if line.strip().startswith("--port"):
-                        PORT = int(line.split()[1])
-            Handler = http.server.SimpleHTTPRequestHandler
-            with socketserver.TCPServer(("", PORT), Handler) as httpd:
-                print(f"Serving at http://localhost:{PORT}")
-                httpd.serve_forever()
-            ' > main.py
+            cat > main.py <<- 'EOF'
+          from radiant.compiler import server
+          with open(".p4a", "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith("--port"):
+                    PORT = int(line.split()[1])
+                if line.strip().startswith("--dist_name"):
+                    DIST_NAME = int(line.split()[1])
+          sys.path.append(os.path.join(os.path.dirname(__file__)))
+          sys.path.append(os.path.join(os.path.dirname(__file__), DIST_NAME))
+          server.main(DIST_NAME, ip="localhost", port=PORT)
+          EOF
           fi
 
           # Cleanup downloaded wheel files
           rm *.whl
+          
+          
+          cat main.py
+          
+          
           
           # Configure build inclusion/exclusion rules
           # Exclude Python bytecode files
