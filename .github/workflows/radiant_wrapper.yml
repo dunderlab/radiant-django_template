@@ -71,6 +71,9 @@ jobs:
             ' > main.py
           fi
           
+          echo "---------"
+          ls
+          
           # Cleanup downloaded wheel files
           rm *.whl
           
