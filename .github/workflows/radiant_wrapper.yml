@@ -73,6 +73,8 @@ jobs:
           
           echo "---------"
           ls -a
+          
+          echo "---------"
           ls project
           
           # Cleanup downloaded wheel files
