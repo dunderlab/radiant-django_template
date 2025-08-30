@@ -24,8 +24,7 @@ jobs:
           docker pull dunderlab/radiant_p4a:latest
           
           # Get the distribution name from .p4a config file
-          DIST_NAME=$(grep -E '^--dist_name ' ../.p4a | awk '{print $2}')
-          # cd "$DIST_NAME"
+          DIST_NAME=$(grep -E '^--dist_name '.p4a | awk '{print $2}')
           
           # Handle Radiant Framework
           if grep -q "radiant.compiler" main.py; then
