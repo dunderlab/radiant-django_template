@@ -78,7 +78,7 @@ jobs:
           ls project
           
           echo "---------"
-          echo "$DIST_NAME" 
+          echo "DIST_AME: $DIST_NAME" 
           if [ -f "$DIST_NAME/manage.py" ]; then
             echo "YEA"
           fi
