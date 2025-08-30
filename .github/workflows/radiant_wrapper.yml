@@ -93,5 +93,5 @@ jobs:
       - name: Upload APKs as Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: generated-apks # Name for the uploaded artifact
+          name: Android APK # Name for the uploaded artifact
           path: ./*.apk # Path pattern to find APK files for upload
