@@ -21,10 +21,10 @@ jobs:
       - name: Execute Command in Docker Container
         run: |
           # Pull the Docker image used for building Android APKs
-          # docker pull dunderlab/radiant_p4a:latest
+          docker pull dunderlab/radiant_p4a:latest
           
           # Get the distribution name from .p4a config file
-          DIST_NAME=$(grep -E '^--dist_name '.p4a | awk '{print $2}')
+          DIST_NAME=$(grep -E '^--dist_name ' .p4a | awk '{print $2}')
           
           # Handle Radiant Framework
           if [ -f "main.py" ] && grep -q "radiant.compiler" main.py; then
@@ -70,19 +70,7 @@ jobs:
                 httpd.serve_forever()
             ' > main.py
           fi
-          
-          echo "---------"
-          ls -a
-          
-          echo "---------"
-          ls project
-          
-          echo "---------"
-          echo "DIST_AME: $DIST_NAME" 
-          if [ -f "$DIST_NAME/manage.py" ]; then
-            echo "YEA"
-          fi
-          
+
           # Cleanup downloaded wheel files
           rm *.whl
           
