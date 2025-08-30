@@ -15,8 +15,8 @@ jobs:
 
       - name: Install Radiant-Compiler
         run: |
+          # Installs the Radiant-Compiler package for building Android apps
           pip install radiant-compiler
-        # Installs the Radiant-Compiler package for building Android apps
 
       - name: Execute Command in Docker Container
         run: |
@@ -28,15 +28,12 @@ jobs:
           
           # Handle Radiant Framework
           if [ -f "main.py" ] && grep -q "radiant.compiler" main.py; then
-              pip download --no-deps django
-              unzip django*.whl "django/*" -d .
               pip download  --no-deps radiant-framework
               unzip radiant_framework*.whl "radiant/*" -d .
           fi
           
           # Handle Django app setup
           if [ -f "$DIST_NAME/manage.py" ]; then
-              
               pip download --no-deps django
               unzip django*.whl "django/*" -d .
               pip download  --no-deps radiant-compiler
@@ -87,6 +84,13 @@ jobs:
           echo "lib-dynload/_sqlite3.so" >> whitelist.txt
           echo "*.py" >> whitelist.txt
           
+          # Add build configuration settings to .p4a file
+          echo "--no-byte-compile-python" >> .p4a
+          echo "--private ." >> .p4a
+          echo "--bootstrap webview" >> .p4a
+          echo "--whitelist whitelist.txt" >> .p4a
+          echo "" >> .p4a
+  
           # Build the Android APK for ARM64 architecture
           radiant_p4a apk --arch arm64-v8a
 
