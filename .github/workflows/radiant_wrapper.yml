@@ -72,7 +72,7 @@ jobs:
           fi
           
           echo "---------"
-          ls
+          ls -a
           
           # Cleanup downloaded wheel files
           rm *.whl
