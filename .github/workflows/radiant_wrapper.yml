@@ -36,6 +36,7 @@ jobs:
           
           # Handle Django app setup
           if [ -f "$DIST_NAME/manage.py" ]; then
+              
               pip download --no-deps django
               unzip django*.whl "django/*" -d .
               pip download  --no-deps radiant-compiler
@@ -47,7 +48,7 @@ jobs:
                     if line.strip().startswith("--port"):
                         PORT = int(line.split()[1])
                     if line.strip().startswith("--dist_name"):
-                        DIST_NAME = int(line.split()[1])
+                        DIST_NAME = line.split()[1].strip()
               sys.path.append(os.path.join(os.path.dirname(__file__)))
               sys.path.append(os.path.join(os.path.dirname(__file__), DIST_NAME))
               server.main(DIST_NAME, ip="localhost", port=PORT)
@@ -63,7 +64,7 @@ jobs:
             with open(".p4a", "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip().startswith("--port"):
-                        PORT = int(line.split()[1])
+            PORT = int(line.split()[1])
             Handler = http.server.SimpleHTTPRequestHandler
             with socketserver.TCPServer(("", PORT), Handler) as httpd:
                 print(f"Serving at http://localhost:{PORT}")
@@ -73,8 +74,6 @@ jobs:
       
           # Remove indentation (2-4 spaces) at the start of each line in main.py
           sed -i 's/^[[:space:]]\{2,4\}//' main.py
-          # MacOS compatibility: remove indentation without creating backup file
-          # sed -i '' 's/^[[:space:]]\{2,4\}//' main.py
   
           # Cleanup downloaded wheel files
           rm *.whl
@@ -90,10 +89,6 @@ jobs:
           
           # Build the Android APK for ARM64 architecture
           radiant_p4a apk --arch arm64-v8a
-          
-          # Prepare artifacts directory and copy APKs
-#          mkdir -p ../artifacts
-#          mv *.apk ../artifacts/
 
       - name: Upload APKs as Artifacts
         uses: actions/upload-artifact@v4
