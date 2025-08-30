@@ -23,7 +23,7 @@ The `.p4a` file in the root directory must be filled with the following configur
 --port 5000
 --requirements python3,hostpython3,sqlite3,sqlparse,asgiref,pytz,pyjnius
 ```
- 
+
 This configuration specifies:
 
 - `--package`: The Java package name for your Android application
