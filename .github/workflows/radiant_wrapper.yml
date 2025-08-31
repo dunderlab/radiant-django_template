@@ -34,38 +34,36 @@ jobs:
           
           # Handle Django app setup
           if [ -f "$DIST_NAME/manage.py" ]; then
-              pip download --no-deps django
-              unzip django*.whl "django/*" -d .
-              pip download  --no-deps radiant-wrapper
-              unzip radiant_wrapper*.whl "radiant/*" -d .
-              echo '
-              from radiant.wrapper import server
-              with open(".p4a", "r", encoding="utf-8") as f:
+            pip download --no-deps django
+            unzip django*.whl "django/*" -d .
+            pip download  --no-deps radiant-wrapper
+            unzip radiant_wrapper*.whl "radiant/*" -d .
+            echo '
+            from radiant.wrapper import django_server
+            with open(".p4a", "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip().startswith("--port"):
                         PORT = int(line.split()[1])
                     if line.strip().startswith("--dist_name"):
                         DIST_NAME = line.split()[1].strip()
-              sys.path.append(os.path.join(os.path.dirname(__file__)))
-              sys.path.append(os.path.join(os.path.dirname(__file__), DIST_NAME))
-              server.main(DIST_NAME, ip="localhost", port=PORT)
-              ' > main.py
+            sys.path.append(os.path.join(os.path.dirname(__file__)))
+            sys.path.append(os.path.join(os.path.dirname(__file__), DIST_NAME))
+            django_server.main(DIST_NAME, ip="127.0.0.1", port=PORT)
+            ' > main.py
           fi
           
           # Handle static HTML app setup
           # Creates main.py with simple HTTP server for static files
           if [ -f "index.html" ]; then
+            pip download  --no-deps radiant-wrapper
+            unzip radiant_wrapper*.whl "radiant/*" -d .
             echo '
-            import http.server
-            import socketserver
+            from radiant.wrapper import html_server
             with open(".p4a", "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip().startswith("--port"):
                         PORT = int(line.split()[1])
-            Handler = http.server.SimpleHTTPRequestHandler
-            with socketserver.TCPServer(("", PORT), Handler) as httpd:
-                print(f"Serving at http://localhost:{PORT}")
-                httpd.serve_forever()
+            html_server.main(ip="127.0.0.1", port=PORT)
             ' > main.py
           fi
       
