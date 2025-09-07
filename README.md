@@ -21,6 +21,9 @@ The `.p4a` file in the root directory must be filled with the following configur
 --dist_name project
 --version 0.1
 --port 5000
+--icon assets/icon.png
+--presplash assets/icon_w.png
+--presplash-color #ff6439
 --requirements python3,hostpython3,sqlite3,sqlparse,asgiref,pytz,pyjnius
 ```
 
@@ -31,7 +34,11 @@ This configuration specifies:
 - `--dist_name`: The distribution name (should match your Django project name)
 - `--version`: The version number of your application
 - `--port`: The port number your Django application will run on
+- `--icon`: Path to the application icon image file
+- `--presplash`: Path to the splash screen image shown during app launch
+- `--presplash-color`: Background color for the splash screen in hex format
 - `--requirements`: Python packages required for your application
+
 
 ## Getting Started
 

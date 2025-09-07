@@ -3,4 +3,7 @@
 --dist_name project
 --version 0.1
 --port 5000
+--icon assets/icon.png
+--presplash assets/icon_w.png
+--presplash-color #ff6439
 --requirements python3,hostpython3,sqlite3,sqlparse,asgiref,pytz,pyjnius
